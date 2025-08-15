@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GovTech TAM & SAM Calculator</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50 text-gray-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useMemo } = React;
+
+      function currency(n) {
+        if (isNaN(n)) return "$0";
+        return n.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+      }
+
+      function percentToFloat(p) {
+        const x = parseFloat(p);
+        if (isNaN(x)) return 0;
+        return Math.min(Math.max(x, 0), 100) / 100;
+      }
+
+      function downloadCSV(rows) {
+        const header = ["Size", "Gov Count", "Adoption %", "Win % (optional)", "Price/Year ($)", "TAM ($)", "SAM ($)", "SOM ($)"];
+        const lines = [header.join(",")];
+        rows.forEach(r => {
+          const adoption = percentToFloat(r.adoption);
+          const win = percentToFloat(r.win || 0);
+          const price = parseFloat(r.price) || 0;
+          const count = parseFloat(r.count) || 0;
+          const tam = count * price;
+          const sam = count * adoption * price;
+          const som = count * adoption * win * price;
+          const line = [
+            `"${(r.size || "").replace(/"/g, '""')}"`,
+            count,
+            r.adoption,
+            r.win || "",
+            price,
+            tam,
+            sam,
+            som
+          ].join(",");
+          lines.push(line);
+        });
+        const blob = new Blob([lines.join("\\n")], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "govtech_tam_sam.csv";
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function StatCard({ label, value, subtitle, ring }) {
+        const ringClass = ring || "ring-gray-200";
+        return (
+          <div className={"rounded-2xl bg-white shadow p-5 ring-1 " + ringClass}>
+            <div className="text-xs uppercase tracking-wider text-gray-500">{label}</div>
+            <div className="mt-2 text-3xl font-extrabold">{value}</div>
+            {subtitle && <div className="mt-1 text-xs text-gray-500">{subtitle}</div>}
+          </div>
+        );
+      }
+
+      function Pill({ children, tone="default" }) {
+        const tones = {
+          default: "bg-gray-100 text-gray-900",
+          tam: "bg-gray-900 text-white",
+          sam: "bg-indigo-600 text-white",
+          som: "bg-emerald-600 text-white",
+        };
+        return (
+          <span className={"inline-block rounded-lg px-2 py-1 font-semibold " + (tones[tone] || tones.default)}>
+            {children}
+          </span>
+        );
+      }
+
+      function App() {
+        const sample = [
+          { id: 1, size: "Small (≤25k)", count: 8000, adoption: 5, win: 30, price: 5000 },
+          { id: 2, size: "Medium (25k–250k)", count: 1200, adoption: 10, win: 30, price: 15000 },
+          { id: 3, size: "Large (≥250k)", count: 120, adoption: 20, win: 30, price: 50000 },
+        ];
+
+        const [rows, setRows] = useState(sample);
+        const [globalPrice, setGlobalPrice] = useState("");
+        const [globalAdoption, setGlobalAdoption] = useState("");
+        const [globalWin, setGlobalWin] = useState("");
+
+        const totals = useMemo(() => {
+          return rows.reduce((acc, r) => {
+            const price = parseFloat(r.price) || 0;
+            const count = parseFloat(r.count) || 0;
+            const adoption = percentToFloat(r.adoption);
+            const win = percentToFloat(r.win || 0);
+            const tam = count * price;
+            const sam = count * adoption * price;
+            const som = count * adoption * win * price;
+            acc.tam += tam;
+            acc.sam += sam;
+            acc.som += som;
+            return acc;
+          }, { tam: 0, sam: 0, som: 0 });
+        }, [rows]);
+
+        const updateRow = (id, field, value) => {
+          setRows(prev => prev.map(r => r.id === id ? { ...r, [field]: value } : r));
+        };
+
+        const addRow = () => {
+          const nextId = (rows[rows.length - 1]?.id || 0) + 1;
+          setRows([...rows, { id: nextId, size: "", count: "", adoption: "", win: "", price: "" }]);
+        };
+
+        const removeRow = (id) => setRows(rows.filter(r => r.id !== id));
+
+        const applyGlobals = () => {
+          setRows(prev => prev.map(r => ({
+            ...r,
+            price: globalPrice !== "" ? globalPrice : r.price,
+            adoption: globalAdoption !== "" ? globalAdoption : r.adoption,
+            win: globalWin !== "" ? globalWin : r.win,
+          })));
+        };
+
+        const resetSample = () => setRows(sample);
+
+        return (
+          <div className="max-w-6xl mx-auto p-6">
+            <header className="mb-6">
+              <h1 className="text-3xl font-bold">GovTech TAM & SAM Calculator</h1>
+              <p className="text-gray-600 mt-2">
+                Estimate market size by government population segment. Enter your price (per year), expected adoption by segment,
+                and (optionally) win rate to also see an indicative SOM. Sample values are included—replace with your own.
+              </p>
+            </header>
+
+            <section className="bg-white rounded-2xl shadow p-4 md:p-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium">Set all Prices ($/yr)</label>
+                  <input value={globalPrice} onChange={e => setGlobalPrice(e.target.value)} type="number" min="0" className="mt-1 w-full rounded-xl border px-3 py-2" placeholder="e.g., 15000" />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium">Set all Adoption %</label>
+                  <input value={globalAdoption} onChange={e => setGlobalAdoption(e.target.value)} type="number" min="0" max="100" className="mt-1 w-full rounded-xl border px-3 py-2" placeholder="e.g., 12" />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium">Set all Win % (optional)</label>
+                  <input value={globalWin} onChange={e => setGlobalWin(e.target.value)} type="number" min="0" max="100" className="mt-1 w-full rounded-xl border px-3 py-2" placeholder="e.g., 30" />
+                </div>
+              </div>
+              <div className="flex gap-3 mt-3">
+                <button onClick={applyGlobals} className="rounded-xl bg-gray-900 text-white px-4 py-2">Apply to all</button>
+                <button onClick={resetSample} className="rounded-xl border px-4 py-2">Reset sample</button>
+                <button onClick={() => downloadCSV(rows)} className="rounded-xl border px-4 py-2">Download CSV</button>
+              </div>
+            </section>
+
+            <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <StatCard label="TAM" value={currency(totals.tam)} subtitle="Total Addressable (count × price)" ring="ring-gray-300" />
+              <StatCard label="SAM" value={currency(totals.sam)} subtitle="Serviceable (count × adoption × price)" ring="ring-indigo-300" />
+              <StatCard label="SOM" value={currency(totals.som)} subtitle="Indicative capture (count × adoption × win × price)" ring="ring-emerald-300" />
+            </section>
+
+            <section className="bg-white rounded-2xl shadow overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="text-left p-3">Size</th>
+                      <th className="text-right p-3">Gov Count</th>
+                      <th className="text-right p-3">Adoption %</th>
+                      <th className="text-right p-3">Win %</th>
+                      <th className="text-right p-3">Price/Year ($)</th>
+                      <th className="text-right p-3">TAM</th>
+                      <th className="text-right p-3">SAM</th>
+                      <th className="text-right p-3">SOM</th>
+                      <th className="p-3"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map(r => {
+                      const count = parseFloat(r.count) || 0;
+                      const price = parseFloat(r.price) || 0;
+                      const adoption = percentToFloat(r.adoption);
+                      const win = percentToFloat(r.win || 0);
+                      const tam = count * price;
+                      const sam = count * adoption * price;
+                      const som = count * adoption * win * price;
+                      return (
+                        <tr key={r.id} className="border-t">
+                          <td className="p-3">
+                            <input value={r.size} onChange={e => updateRow(r.id, "size", e.target.value)} className="w-full rounded-lg border px-2 py-1" placeholder="e.g., Small (≤25k)" />
+                          </td>
+                          <td className="p-3 text-right">
+                            <input value={r.count} onChange={e => updateRow(r.id, "count", e.target.value)} type="number" min="0" className="w-full text-right rounded-lg border px-2 py-1" placeholder="0" />
+                          </td>
+                          <td className="p-3 text-right">
+                            <input value={r.adoption} onChange={e => updateRow(r.id, "adoption", e.target.value)} type="number" min="0" max="100" className="w-full text-right rounded-lg border px-2 py-1" placeholder="%" />
+                          </td>
+                          <td className="p-3 text-right">
+                            <input value={r.win} onChange={e => updateRow(r.id, "win", e.target.value)} type="number" min="0" max="100" className="w-full text-right rounded-lg border px-2 py-1" placeholder="%" />
+                          </td>
+                          <td className="p-3 text-right">
+                            <input value={r.price} onChange={e => updateRow(r.id, "price", e.target.value)} type="number" min="0" className="w-full text-right rounded-lg border px-2 py-1" placeholder="$" />
+                          </td>
+                          <td className="p-3 text-right font-medium"><Pill tone="tam">{currency(tam)}</Pill></td>
+                          <td className="p-3 text-right font-medium"><Pill tone="sam">{currency(sam)}</Pill></td>
+                          <td className="p-3 text-right font-medium"><Pill tone="som">{currency(som)}</Pill></td>
+                          <td className="p-3 text-right">
+                            <button onClick={() => removeRow(r.id)} className="text-red-600">Remove</button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <footer className="mt-6 text-sm text-gray-600">
+              <p>
+                Notes: TAM = Σ(count × price). SAM = Σ(count × adoption × price). SOM = Σ(count × adoption × win × price). 
+                Adoption and win are percentages (0–100). Price is annual subscription or average annualized contract value.
+              </p>
+            </footer>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
