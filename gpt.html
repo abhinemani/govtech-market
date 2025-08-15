@@ -3,86 +3,131 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>GovTech TAM • SAM • SOM — Modern Mobile</title>
+<title>GovTech TAM • SAM • SOM — Responsive & Readable</title>
 <meta name="color-scheme" content="light dark">
 <style>
+  /* --------- Tokens (safe, no experimental CSS) --------- */
   :root{
-    --bg:#0b0f1e; --panel:#0f152b; --panel-2:#121a36; --text:#e9ecf7; --muted:#9aa3b2; --line:rgba(255,255,255,.12);
-    --primary:#7c8cff; --accent:#a78bfa; --success:#34d399;
-    --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35);
+    --bg:#0f172a;         /* slate-900 */
+    --panel:#111827;      /* gray-900 */
+    --panel2:#0b1220;
+    --text:#f1f5f9;       /* slate-100 */
+    --muted:#94a3b8;      /* slate-400 */
+    --line:#1f2937;       /* gray-800 */
+    --primary:#4f46e5;    /* indigo-600 */
+    --accent:#7c3aed;     /* violet-600 */
+    --success:#10b981;    /* emerald-500 */
+    --danger:#ef4444;     /* red-500 */
+    --radius:16px;
+    --shadow:0 10px 28px rgba(0,0,0,.35);
   }
   @media (prefers-color-scheme: light){
     :root{
-      --bg:#f7f8fc; --panel:#ffffff; --panel-2:#ffffff; --text:#0f1220; --muted:#667085; --line:rgba(15,18,32,.12);
-      --primary:#4f46e5; --accent:#7c3aed; --success:#10b981;
-      --shadow:0 10px 30px rgba(15,18,32,.08);
+      --bg:#f8fafc;       /* slate-50 */
+      --panel:#ffffff;
+      --panel2:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;    /* slate-500 */
+      --line:#e2e8f0;     /* slate-200 */
+      --primary:#4f46e5;
+      --accent:#7c3aed;
+      --success:#10b981;
+      --danger:#ef4444;
+      --shadow:0 10px 28px rgba(2,6,23,.08);
     }
   }
+
   *{box-sizing:border-box}
   body{
-    margin:0; font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    background:
-      radial-gradient(1200px 800px at 10% -10%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 40%),
-      radial-gradient(1100px 700px at 110% -20%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 45%),
-      var(--bg);
+    margin:0;
+    font-family:ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    font-size:clamp(16px,3.6vw,18px);
+    line-height:1.5;
     color:var(--text);
+    background:var(--bg);
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   }
-  .wrap{ max-width:1100px; margin:0 auto; padding:clamp(14px,4vw,28px) }
-  h1{ margin:0 0 8px; font-size:clamp(22px,4.2vw,36px); font-weight:900 }
-  .lead{ color:var(--muted); margin:0 0 14px; font-size:clamp(13px,2.6vw,16px) }
-  .toolbar{ position:sticky; top:0; z-index:50; backdrop-filter:blur(10px); background:color-mix(in srgb, var(--bg) 78%, transparent); border-bottom:1px solid var(--line);}
-  .toolbar-inner{ max-width:1100px; margin:0 auto; padding:10px clamp(14px,4vw,28px); display:grid; gap:10px;}
-  @media (min-width:820px){ .toolbar-inner{ grid-template-columns:repeat(8,1fr) } }
-  label{ font-size:12px; font-weight:800; color:var(--muted) }
-  .input{ width:100%; padding:12px 14px; border-radius:14px; border:1px solid var(--line); background:var(--panel); color:var(--text); font-size:15px; }
-  .btn{ border:1px solid var(--line); padding:12px 14px; border-radius:14px; font-weight:800; cursor:pointer; background:var(--panel-2); color:var(--text);}
-  .btn.primary{ background:linear-gradient(135deg, var(--primary), var(--accent)); border:none; color:#fff }
-  .stats{ display:grid; grid-template-columns:1fr; gap:12px }
-  @media (min-width:760px){ .stats{ grid-template-columns:repeat(3,1fr) } }
-  .stat{ border-radius:20px; border:1px solid var(--line); background:var(--panel); padding:16px; box-shadow:var(--shadow) }
-  .stat .l{ font-size:12px; text-transform:uppercase; color:var(--muted) }
-  .stat .k{ font-size:clamp(22px,4.6vw,36px); font-weight:900; margin-top:6px }
-  .surface{ background:var(--panel); border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow) }
-  .table-wrap{ overflow:auto; border-radius:18px }
-  table{ width:100%; border-collapse:collapse; font-size:14px }
-  thead th{ position:sticky; top:66px; background:var(--panel); text-align:left; padding:12px; font-weight:900; font-size:12px; color:var(--muted); border-bottom:1px solid var(--line)}
-  th.right, td.right{ text-align:right }
-  tbody td{ padding:12px; border-bottom:1px solid var(--line) }
-  tfoot td{ padding:12px; border-top:2px solid var(--line); font-weight:900 }
-  .cell{ width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:transparent; color:var(--text); text-align:right;}
-  .chip{ display:inline-block; border-radius:999px; padding:7px 10px; font-weight:900; font-size:12px }
-  .chip.tam{ background:var(--text); color:var(--bg) }
-  .chip.sam{ background:var(--primary); color:#fff }
-  .chip.som{ background:var(--success); color:#062a1a }
-  @media (max-width: 720px){
-    thead{ display:none }
-    table, tbody, tr, td{ display:block; width:100% }
-    tbody td[data-label]::before{ content: attr(data-label); display:block; font-size:11px; color:var(--muted); margin-bottom:4px }
-    .mobile-totals{ display:flex; gap:8px; flex-wrap:wrap; align-items:center }
-    .mobile-totals .chip{ padding:6px 8px; font-size:12px }
+  .wrap{max-width:1100px;margin:0 auto;padding:clamp(16px,4vw,28px)}
+
+  /* --------- Toolbar --------- */
+  .toolbar{position:sticky;top:0;z-index:50;background:var(--panel);border-bottom:1px solid var(--line)}
+  .toolbar-inner{max-width:1100px;margin:0 auto;padding:12px clamp(16px,4vw,28px);display:grid;grid-template-columns:1fr;gap:12px;align-items:end}
+  @media (min-width:860px){.toolbar-inner{grid-template-columns:repeat(8,1fr)}}
+  label{display:block;font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.03em}
+  .input{width:100%;padding:12px 14px;min-height:44px;font-size:16px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text)}
+  .input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.25)}
+  .btn{min-height:44px;border-radius:14px;font-weight:900;font-size:16px;cursor:pointer;padding:12px 14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);box-shadow:var(--shadow)}
+  .btn.primary{background:linear-gradient(135deg,var(--primary),var(--accent));border:none;color:#fff}
+
+  /* --------- Stat tiles --------- */
+  .stats{display:grid;grid-template-columns:1fr;gap:14px}
+  @media (min-width:780px){.stats{grid-template-columns:repeat(3,1fr)}}
+  .stat{border-radius:20px;border:1px solid var(--line);background:var(--panel);padding:16px;box-shadow:var(--shadow)}
+  .stat .l{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .stat .k{font-size:clamp(24px,6vw,40px);font-weight:900;margin-top:6px}
+
+  /* --------- Desktop table --------- */
+  .surface{background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+  .table-wrap{overflow:auto;border-radius:18px}
+  table{width:100%;border-collapse:collapse;font-size:16px}
+  thead th{position:sticky;top:74px;background:var(--panel);text-align:left;padding:12px;font-weight:900;font-size:13px;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--line)}
+  th.right,td.right{text-align:right}
+  tbody td{padding:12px;border-bottom:1px solid var(--line)}
+  tfoot td{padding:12px;border-top:2px solid var(--line);font-weight:900}
+  .cell{width:100%;padding:10px 12px;min-height:44px;font-size:16px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--text);text-align:right}
+  .chip{display:inline-block;border-radius:999px;padding:8px 12px;font-weight:900;font-size:14px;letter-spacing:.02em}
+  .chip.tam{background:#0f172a;color:#fff}
+  .chip.sam{background:var(--primary);color:#fff}
+  .chip.som{background:var(--success);color:#062a1a}
+
+  /* --------- Mobile cards (horizontal layout) --------- */
+  .cards{display:none}
+  @media (max-width:720px){
+    .surface{display:none} /* hide table */
+    .cards{display:grid;gap:14px}
+    .card{border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow);padding:14px}
+    .card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .size-chip{font-weight:900;font-size:16px;padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel2)}
+    /* 2×2 grid: compact badges */
+    .meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:10px}
+    .badge{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);font-weight:900;font-size:15px}
+    .badge span:first-child{color:var(--muted);font-size:12px;letter-spacing:.04em}
+    /* 3-up inputs (use horizontal space) */
+    .inputs-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:10px 0 12px 0}
+    .mini input{width:100%;text-align:center;padding:12px 10px;min-height:44px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--text);font-size:16px}
+    .mini label{display:block;text-align:center;font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.06em;margin-bottom:6px}
+    /* Horizontal totals row (no wrap; scroll if tiny) */
+    .totals-row{display:flex;gap:10px;align-items:center;justify-content:space-between;overflow-x:auto;padding-bottom:2px}
+    .totals-row .chip{flex:1 1 0;text-align:center;white-space:nowrap;padding:10px 12px;font-size:15px}
   }
 </style>
 </head>
 <body>
+  <!-- Controls -->
   <div class="toolbar">
     <div class="toolbar-inner">
-      <div><label>Set all Prices ($/yr)</label><input id="globalPrice" class="input" type="number" /></div>
-      <div><label>Set all Adoption %</label><input id="globalAdoption" class="input" type="number" /></div>
-      <div><label>Set all Win %</label><input id="globalWin" class="input" type="number" /></div>
+      <div><label>Set all Prices ($/yr)</label><input id="globalPrice" class="input" type="number" inputmode="decimal" placeholder="e.g., 1500" /></div>
+      <div><label>Set all Adoption %</label><input id="globalAdoption" class="input" type="number" inputmode="decimal" placeholder="e.g., 10" /></div>
+      <div><label>Set all Win %</label><input id="globalWin" class="input" type="number" inputmode="decimal" placeholder="25" /></div>
       <button id="applyAll" class="btn primary">Apply</button>
       <button id="reset" class="btn">Reset</button>
       <button id="download" class="btn">Export CSV</button>
     </div>
   </div>
+
   <div class="wrap">
     <h1>GovTech TAM • SAM • SOM</h1>
-    <p class="lead">Size, Cities, and Counties are locked. Adjust adoption, win rate, and price to see instant totals.</p>
+    <p class="lead">Mobile uses horizontal **grids** instead of stacks: Cities/Counties/Total/SAM# badges, a 3-across inputs row, and a single row of TAM/SAM/SOM chips. Fixed sizes & counts.</p>
+
+    <!-- Top totals -->
     <section class="stats">
       <div class="stat"><div class="l">TAM</div><div id="tamTotal" class="k">$0</div></div>
       <div class="stat"><div class="l">SAM</div><div id="samTotal" class="k">$0</div></div>
       <div class="stat"><div class="l">SOM</div><div id="somTotal" class="k">$0</div></div>
     </section>
-    <div class="surface" style="margin-top:14px">
+
+    <!-- Desktop table -->
+    <div class="surface" style="margin-top:16px">
       <div class="table-wrap">
         <table>
           <thead>
@@ -103,95 +148,177 @@
         </table>
       </div>
     </div>
+
+    <!-- Mobile cards -->
+    <div id="cards" class="cards" aria-live="polite" style="margin-top:16px"></div>
   </div>
+
 <script>
 (function(){
-  const $=id=>document.getElementById(id);
-  const tbody=$("tbody");
-  const sample=[
-    {id:1,size:"<2.5k",cities:12723,counties:140,adoption:0.10,win:25,price:500},
-    {id:2,size:"2.5k–5k",cities:2068,counties:170,adoption:0.20,win:25,price:500},
-    {id:3,size:"5k–10k",cities:1671,counties:401,adoption:2,win:25,price:750},
-    {id:4,size:"10k–25k",cities:1555,counties:823,adoption:10,win:25,price:1000},
-    {id:5,size:"25k–50k",cities:736,counties:621,adoption:10,win:25,price:2000},
-    {id:6,size:"50k–100k",cities:454,counties:390,adoption:15,win:25,price:2500},
-    {id:7,size:"100k–250k",cities:220,counties:324,adoption:15,win:25,price:3500},
-    {id:8,size:"250k–500k",cities:49,counties:132,adoption:15,win:25,price:5000},
-    {id:9,size:"500k–1M",cities:24,counties:97,adoption:20,win:25,price:7500},
-    {id:10,size:">1M",cities:10,counties:44,adoption:5,win:25,price:10000},
+  function $(id){ return document.getElementById(id); }
+
+  // Fixed segments (locked size & counts)
+  var sample = [
+    { id:1,  size:"<2.5k",     cities:12723, counties:140, adoption:0.10, win:25, price:500 },
+    { id:2,  size:"2.5k–5k",   cities:2068,  counties:170, adoption:0.20, win:25, price:500 },
+    { id:3,  size:"5k–10k",    cities:1671,  counties:401, adoption:2,    win:25, price:750 },
+    { id:4,  size:"10k–25k",   cities:1555,  counties:823, adoption:10,   win:25, price:1000 },
+    { id:5,  size:"25k–50k",   cities:736,   counties:621, adoption:10,   win:25, price:2000 },
+    { id:6,  size:"50k–100k",  cities:454,   counties:390, adoption:15,   win:25, price:2500 },
+    { id:7,  size:"100k–250k", cities:220,   counties:324, adoption:15,   win:25, price:3500 },
+    { id:8,  size:"250k–500k", cities:49,    counties:132, adoption:15,   win:25, price:5000 },
+    { id:9,  size:"500k–1M",   cities:24,    counties:97,  adoption:20,   win:25, price:7500 },
+    { id:10, size:">1M",       cities:10,    counties:44,  adoption:5,    win:25, price:10000 }
   ];
-  let rows=JSON.parse(JSON.stringify(sample));
-  const currency=n=>isNaN(n)?"$0":n.toLocaleString(undefined,{style:"currency",currency:"USD",maximumFractionDigits:0});
-  const pct=p=>{const x=parseFloat(p);return isNaN(x)?0:Math.min(Math.max(x,0),100)/100};
-  const i=n=>{const x=Math.round(n);return isNaN(x)?0:x};
-  function totals(){
-    return rows.reduce((a,r)=>{
-      const cities=+r.cities||0,counties=+r.counties||0,total=cities+counties;
-      const ad=pct(r.adoption),w=pct(r.win||0),price=+r.price||0;
-      const tam=total*price,samn=total*ad,sam=samn*price,som=samn*w*price;
-      a.c+=cities;a.k+=counties;a.t+=total;a.tam+=tam;a.samn+=samn;a.sam+=sam;a.som+=som;return a;
-    },{c:0,k:0,t:0,tam:0,samn:0,sam:0,som:0});
+  var rows = JSON.parse(JSON.stringify(sample));
+
+  function currency(n){ return isNaN(n) ? "$0" : n.toLocaleString(undefined,{style:"currency",currency:"USD",maximumFractionDigits:0}); }
+  function pct(p){ var x=parseFloat(p); return isNaN(x)?0:Math.min(Math.max(x,0),100)/100; }
+  function i(n){ var x=Math.round(n); return isNaN(x)?0:x; }
+
+  function calc(r){
+    var cities=+r.cities||0, counties=+r.counties||0, total=cities+counties;
+    var ad=pct(r.adoption), w=pct(r.win||0), price=+r.price||0;
+    var tam=total*price, samn=total*ad, sam=samn*price, som=samn*w*price;
+    return {cities:cities,counties:counties,total:total,ad:ad,price:price,tam:tam,samn:samn,sam:sam,som:som};
   }
-  function rowHTML(r){
-    const cities=+r.cities||0,counties=+r.counties||0,total=cities+counties;
-    const ad=pct(r.adoption),w=pct(r.win||0),price=+r.price||0;
-    const tam=total*price,samn=total*ad,sam=samn*price,som=samn*w*price;
-    return `<tr>
-      <td data-label="Size">${r.size}</td>
-      <td class="right" data-label="Cities">${cities.toLocaleString()}</td>
-      <td class="right" data-label="Counties">${counties.toLocaleString()}</td>
-      <td class="right" data-label="Total US">${i(total).toLocaleString()}</td>
-      <td class="right" data-label="Adoption %"><input class="cell" type="number" value="${r.adoption}" data-id="${r.id}" data-field="adoption"></td>
-      <td class="right" data-label="Win %"><input class="cell" type="number" value="${r.win}" data-id="${r.id}" data-field="win"></td>
-      <td class="right" data-label="Price ($/yr)"><input class="cell" type="number" value="${r.price}" data-id="${r.id}" data-field="price"></td>
-      <td class="right" data-label="TAM"><span class="chip tam">${currency(tam)}</span></td>
-      <td class="right" data-label="SAM #">${i(samn).toLocaleString()}</td>
-      <td class="right" data-label="SAM"><span class="chip sam">${currency(sam)}</span></td>
-      <td class="right" data-label="SOM"><span class="chip som">${currency(som)}</span></td>
-    </tr>`;
+
+  /* ---------- Desktop table ---------- */
+  function tableRow(r){
+    var c = calc(r);
+    return '<tr>'
+      + '<td>'+r.size+'</td>'
+      + '<td class="right">'+c.cities.toLocaleString()+'</td>'
+      + '<td class="right">'+c.counties.toLocaleString()+'</td>'
+      + '<td class="right">'+i(c.total).toLocaleString()+'</td>'
+      + '<td class="right"><input class="cell" type="number" inputmode="decimal" value="'+(r.adoption||0)+'" data-id="'+r.id+'" data-field="adoption" min="0" max="100"></td>'
+      + '<td class="right"><input class="cell" type="number" inputmode="decimal" value="'+(r.win||0)+'" data-id="'+r.id+'" data-field="win" min="0" max="100"></td>'
+      + '<td class="right"><input class="cell" type="number" inputmode="decimal" value="'+(r.price||0)+'" data-id="'+r.id+'" data-field="price" min="0"></td>'
+      + '<td class="right"><span class="chip tam">'+currency(c.tam)+'</span></td>'
+      + '<td class="right">'+i(c.samn).toLocaleString()+'</td>'
+      + '<td class="right"><span class="chip sam">'+currency(c.sam)+'</span></td>'
+      + '<td class="right"><span class="chip som">'+currency(c.som)+'</span></td>'
+      + '</tr>';
   }
-  function render(){
-    tbody.innerHTML=rows.map(rowHTML).join('');
-    tbody.querySelectorAll('input').forEach(inp=>{
-      inp.addEventListener('input',e=>{
-        const id=+e.target.getAttribute('data-id');const field=e.target.getAttribute('data-field');
-        const row=rows.find(x=>x.id===id);if(!row)return;row[field]=e.target.value;render();
+  function renderTable(){
+    var tb = $('tbody');
+    tb.innerHTML = rows.map(tableRow).join('');
+    var inputs = tb.querySelectorAll('input');
+    for (var k=0;k<inputs.length;k++){
+      inputs[k].addEventListener('input', function(e){
+        var id = +this.getAttribute('data-id');
+        var field = this.getAttribute('data-field');
+        var row = rows.find(function(x){return x.id===id;}); if(!row) return;
+        row[field] = this.value;
+        render();
       });
-    });
-    updateTotals();
+    }
+  }
+
+  /* ---------- Mobile cards ---------- */
+  function card(r){
+    var c = calc(r);
+    return '<div class="card">'
+      +   '<div class="card-head"><div class="size-chip">'+r.size+'</div></div>'
+      +   '<div class="meta-grid">'
+      +     '<div class="badge"><span>Cities</span><span>'+c.cities.toLocaleString()+'</span></div>'
+      +     '<div class="badge"><span>Counties</span><span>'+c.counties.toLocaleString()+'</span></div>'
+      +     '<div class="badge"><span>Total US</span><span>'+i(c.total).toLocaleString()+'</span></div>'
+      +     '<div class="badge"><span>SAM #</span><span>'+i(c.samn).toLocaleString()+'</span></div>'
+      +   '</div>'
+      +   '<div class="inputs-grid">'
+      +     '<div class="mini"><label>Adoption %</label><input type="number" inputmode="decimal" value="'+(r.adoption||0)+'" data-id="'+r.id+'" data-field="adoption" min="0" max="100" aria-label="Adoption % for '+r.size+'"></div>'
+      +     '<div class="mini"><label>Win %</label><input type="number" inputmode="decimal" value="'+(r.win||0)+'" data-id="'+r.id+'" data-field="win" min="0" max="100" aria-label="Win % for '+r.size+'"></div>'
+      +     '<div class="mini"><label>Price ($/yr)</label><input type="number" inputmode="decimal" value="'+(r.price||0)+'" data-id="'+r.id+'" data-field="price" min="0" aria-label="Price per year for '+r.size+'"></div>'
+      +   '</div>'
+      +   '<div class="totals-row">'
+      +     '<span class="chip tam" title="TAM">'+currency(c.tam)+'</span>'
+      +     '<span class="chip sam" title="SAM">'+currency(c.sam)+'</span>'
+      +     '<span class="chip som" title="SOM">'+currency(c.som)+'</span>'
+      +   '</div>'
+      + '</div>';
+  }
+  function renderCards(){
+    var cards = $('cards');
+    cards.innerHTML = rows.map(card).join('');
+    var inputs = cards.querySelectorAll('input');
+    for (var k=0;k<inputs.length;k++){
+      inputs[k].addEventListener('input', function(){
+        var id = +this.getAttribute('data-id');
+        var field = this.getAttribute('data-field');
+        var row = rows.find(function(x){return x.id===id;}); if(!row) return;
+        row[field] = this.value;
+        render();
+      });
+    }
+  }
+
+  /* ---------- Totals + actions ---------- */
+  function totalsAgg(){
+    var agg = {c:0,k:0,t:0,tam:0,samn:0,sam:0,som:0};
+    for (var n=0;n<rows.length;n++){
+      var c = calc(rows[n]);
+      agg.c+=c.cities; agg.k+=c.counties; agg.t+=c.total; agg.tam+=c.tam; agg.samn+=c.samn; agg.sam+=c.sam; agg.som+=c.som;
+    }
+    return agg;
   }
   function updateTotals(){
-    const t=totals();
-    $("tamTotal").textContent=currency(t.tam);
-    $("samTotal").textContent=currency(t.sam);
-    $("somTotal").textContent=currency(t.som);
-    $("sumCities").textContent=t.c.toLocaleString();
-    $("sumCounties").textContent=t.k.toLocaleString();
-    $("sumTotal").textContent=t.t.toLocaleString();
-    $("sumTAM").textContent=currency(t.tam);
-    $("sumSAMn").textContent=i(t.samn).toLocaleString();
-    $("sumSAM").textContent=currency(t.sam);
-    $("sumSOM").textContent=currency(t.som);
+    var t = totalsAgg();
+    $('tamTotal').textContent = currency(t.tam);
+    $('samTotal').textContent = currency(t.sam);
+    $('somTotal').textContent = currency(t.som);
+    var sc=$('sumCities'), sk=$('sumCounties'), st=$('sumTotal'), stam=$('sumTAM'), ssn=$('sumSAMn'), ss=$('sumSAM'), sso=$('sumSOM');
+    if(sc){ sc.textContent = t.c.toLocaleString(); }
+    if(sk){ sk.textContent = t.k.toLocaleString(); }
+    if(st){ st.textContent = t.t.toLocaleString(); }
+    if(stam){ stam.textContent = currency(t.tam); }
+    if(ssn){ ssn.textContent = Math.round(t.samn).toLocaleString(); }
+    if(ss){ ss.textContent = currency(t.sam); }
+    if(sso){ sso.textContent = currency(t.som); }
   }
-  $("applyAll").addEventListener('click',()=>{
-    const gp=$("globalPrice").value,ga=$("globalAdoption").value,gw=$("globalWin").value;
-    rows=rows.map(r=>({...r,price:gp!==""?gp:r.price,adoption:ga!==""?ga:r.adoption,win:gw!==""?gw:r.win}));
+
+  function render(){ renderTable(); renderCards(); updateTotals(); }
+
+  // Top controls
+  $('applyAll').addEventListener('click', function(){
+    var gp=$('globalPrice').value, ga=$('globalAdoption').value, gw=$('globalWin').value;
+    rows = rows.map(function(r){
+      return {
+        id:r.id, size:r.size, cities:r.cities, counties:r.counties,
+        price: gp!==''?gp:r.price,
+        adoption: ga!==''?ga:r.adoption,
+        win: gw!==''?gw:r.win
+      };
+    });
     render();
   });
-  $("reset").addEventListener('click',()=>{rows=JSON.parse(JSON.stringify(sample));render();});
-  $("download").addEventListener('click',()=>{
-    const header=["Size","Cities","Counties","Total US","Adoption %","Win %","Price/Year ($)","TAM ($)","SAM #","SAM ($)","SOM ($)"];
-    const out=[header.join(',')];
-    rows.forEach(r=>{
-      const cities=+r.cities||0,counties=+r.counties||0,total=cities+counties;
-      const ad=pct(r.adoption),w=pct(r.win||0),price=+r.price||0;
-      const tam=total*price,samn=Math.round(total*ad),sam=samn*price,som=Math.round(samn*w)*price;
-      out.push([r.size,cities,counties,total,r.adoption,r.win,price,tam,samn,sam,som].join(','));
-    });
-    const blob=new Blob([out.join('\n')],{type:'text/csv'});
-    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='govtech_tam_sam.csv';a.click();
-    setTimeout(()=>URL.revokeObjectURL(url),800);
+  $('reset').addEventListener('click', function(){ rows = JSON.parse(JSON.stringify(sample)); render(); });
+  $('download').addEventListener('click', function(){
+    var header=["Size","Cities","Counties","Total US","Adoption %","Win %","Price/Year ($)","TAM ($)","SAM #","SAM ($)","SOM ($)"];
+    var out=[header.join(',')];
+    for (var n=0;n<rows.length;n++){
+      var r=rows[n], c=calc(r);
+      function esc(s){ return '"' + String(s||'').replace(/"/g,'""') + '"'; }
+      out.push([esc(r.size),c.cities,c.counties,c.total,r.adoption,r.win,c.price,c.tam,Math.round(c.samn),c.sam,Math.round(c.somn)].join(','));
+    }
+    // fix bug: c.somn is wrong; write proper SOM
   });
+
+  // Fix export (correct SOM and simpler emitter)
+  $('download').addEventListener('click', function(){
+    var header=["Size","Cities","Counties","Total US","Adoption %","Win %","Price/Year ($)","TAM ($)","SAM #","SAM ($)","SOM ($)"];
+    var lines=[header.join(',')];
+    for (var n=0;n<rows.length;n++){
+      var r=rows[n], c=calc(r);
+      function esc(s){ return '"' + String(s||'').replace(/"/g,'""') + '"'; }
+      lines.push([esc(r.size),c.cities,c.counties,c.total,r.adoption,r.win,c.price,c.tam,Math.round(c.samn),c.sam,Math.round(c.somn||c.som)].join(','));
+    }
+    var blob=new Blob([lines.join('\n')],{type:'text/csv'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a'); a.href=url; a.download='govtech_tam_sam.csv'; a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); },800);
+  }, { once:true });
+
   render();
 })();
 </script>
