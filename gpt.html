@@ -1,246 +1,199 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GovTech TAM & SAM Calculator (Mobile-first, v5)</title>
-  <meta name="color-scheme" content="light dark">
-  <style>
-    /* ---------- Tokens ---------- */
-    :root{ --bg:#0b1020; --panel:#111936; --text:#e6e9f2; --muted:#9aa3b2; --line:rgba(255,255,255,.12);
-           --indigo:#7c8cff; --green:#34d399; --accent:#a78bfa; --danger:#ff6b6b; --radius:16px; }
-    @media (prefers-color-scheme: light){ :root{ --bg:#f7f7fb; --panel:#ffffff; --text:#0e1020; --muted:#5b6474; --line:rgba(12,18,28,.12); --indigo:#4f46e5; --green:#10b981; --accent:#7c3aed; --danger:#e11d48; } }
-
-    *{box-sizing:border-box}
-    body{ margin:0; font-family: ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:var(--text); }
-
-    .wrap{ max-width: 1100px; margin: 0 auto; padding: clamp(12px, 4vw, 24px); }
-    h1{ margin:0 0 6px; font-size: clamp(20px, 4.5vw, 32px); font-weight: 800; letter-spacing:-.02em; }
-    .lead{ color:var(--muted); margin:0 0 10px; font-size: clamp(13px, 2.8vw, 16px); }
-
-    /* Toolbar */
-    .toolbar{ position: sticky; top:0; z-index:50; backdrop-filter: blur(10px); background: color-mix(in srgb, var(--bg) 85%, transparent); border-bottom:1px solid var(--line); }
-    .toolbar-inner{ max-width:1100px; margin:0 auto; padding:10px clamp(12px,4vw,24px); display:grid; grid-template-columns:1fr; gap:8px; align-items:end; }
-    @media (min-width: 760px){ .toolbar-inner{ grid-template-columns:repeat(8,1fr) } }
-    label{ display:block; font-size:12px; font-weight:700; color:var(--muted); letter-spacing:.02em }
-    .input{ width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--line); background:var(--panel); color:var(--text); font-size:15px }
-    .btn{ border:1px solid var(--line); background:var(--panel); color:var(--text); padding:12px 14px; border-radius:12px; font-weight:700; cursor:pointer }
-    .btn.primary{ background:linear-gradient(135deg,var(--indigo),var(--accent)); color:#fff; border:none }
-    .btn.warn{ color:var(--danger); border-color:var(--danger) }
-
-    /* Stats */
-    .stats{ display:grid; grid-template-columns:1fr; gap:10px }
-    @media (min-width:760px){ .stats{ grid-template-columns:repeat(3,1fr) } }
-    .stat{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:14px }
-    .stat .k{ font-size: clamp(22px,4.5vw,34px); font-weight:900; margin-top:6px }
-    .stat .l{ font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted) }
-
-    /* Table -> Cards on mobile */
-    .panel{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:0 }
-    .table-wrap{ overflow:auto }
-    table{ width:100%; border-collapse:collapse; font-size:14px }
-    thead th{ position: sticky; top: 64px; background: color-mix(in srgb, var(--panel) 94%, transparent); backdrop-filter: blur(6px); text-align:left; padding:10px 12px; font-weight:800; font-size:12px; letter-spacing:.06em; color:var(--muted); border-bottom:1px solid var(--line) }
-    th.right, td.right{ text-align:right }
-    tbody td{ padding:12px; border-bottom:1px solid var(--line) }
-    tfoot td{ padding:12px; border-top:2px solid var(--line); font-weight:800 }
-    .pill{ display:inline-block; border-radius:999px; padding:6px 10px; font-weight:800; font-size:13px }
-    .pill.tam{ background: color-mix(in srgb, var(--text) 86%, transparent); color:var(--bg) }
-    .pill.sam{ background: color-mix(in srgb, var(--indigo) 70%, transparent); color:#fff }
-    .pill.som{ background: color-mix(in srgb, var(--green) 70%, transparent); color:#062a1a }
-    .cell{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:transparent; color:var(--text) }
-
-    /* Mobile card mode + horizontal totals chips */
-    @media (max-width: 720px){
-      thead{ display:none }
-      table, tbody, tr, td{ display:block; width:100% }
-      tbody tr{ border-bottom:1px solid var(--line); padding:10px 8px }
-      tbody td{ border:none; padding:6px 4px }
-      tbody td[data-label]::before{ content: attr(data-label); display:block; font-size:11px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin-bottom:4px }
-      .row-actions{ display:flex; justify-content:flex-end }
-      .table-wrap{ max-height: none }
-
-      .hide-mobile{ display:none !important }
-      .mobile-totals{ display:flex !important; gap:8px; justify-content:flex-end; flex-wrap:wrap; align-items:center }
-      .mobile-totals .label{ margin-right:auto; font-size:11px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase }
-      .mobile-totals .pill{ padding:6px 8px; font-size:12px }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GovTech TAM • SAM • SOM — Modern Mobile</title>
+<meta name="color-scheme" content="light dark">
+<style>
+  :root{
+    --bg:#0b0f1e; --panel:#0f152b; --panel-2:#121a36; --text:#e9ecf7; --muted:#9aa3b2; --line:rgba(255,255,255,.12);
+    --primary:#7c8cff; --accent:#a78bfa; --success:#34d399;
+    --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#f7f8fc; --panel:#ffffff; --panel-2:#ffffff; --text:#0f1220; --muted:#667085; --line:rgba(15,18,32,.12);
+      --primary:#4f46e5; --accent:#7c3aed; --success:#10b981;
+      --shadow:0 10px 30px rgba(15,18,32,.08);
     }
-    @media (min-width: 721px){ .mobile-totals{ display:none } }
-
-    .fab{ position: fixed; right: 16px; bottom: 16px; border:none; border-radius:999px; padding: 14px 16px; font-weight:800; background:linear-gradient(135deg,var(--indigo),var(--accent)); color:#fff }
-  </style>
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    background:
+      radial-gradient(1200px 800px at 10% -10%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 40%),
+      radial-gradient(1100px 700px at 110% -20%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 45%),
+      var(--bg);
+    color:var(--text);
+  }
+  .wrap{ max-width:1100px; margin:0 auto; padding:clamp(14px,4vw,28px) }
+  h1{ margin:0 0 8px; font-size:clamp(22px,4.2vw,36px); font-weight:900 }
+  .lead{ color:var(--muted); margin:0 0 14px; font-size:clamp(13px,2.6vw,16px) }
+  .toolbar{ position:sticky; top:0; z-index:50; backdrop-filter:blur(10px); background:color-mix(in srgb, var(--bg) 78%, transparent); border-bottom:1px solid var(--line);}
+  .toolbar-inner{ max-width:1100px; margin:0 auto; padding:10px clamp(14px,4vw,28px); display:grid; gap:10px;}
+  @media (min-width:820px){ .toolbar-inner{ grid-template-columns:repeat(8,1fr) } }
+  label{ font-size:12px; font-weight:800; color:var(--muted) }
+  .input{ width:100%; padding:12px 14px; border-radius:14px; border:1px solid var(--line); background:var(--panel); color:var(--text); font-size:15px; }
+  .btn{ border:1px solid var(--line); padding:12px 14px; border-radius:14px; font-weight:800; cursor:pointer; background:var(--panel-2); color:var(--text);}
+  .btn.primary{ background:linear-gradient(135deg, var(--primary), var(--accent)); border:none; color:#fff }
+  .stats{ display:grid; grid-template-columns:1fr; gap:12px }
+  @media (min-width:760px){ .stats{ grid-template-columns:repeat(3,1fr) } }
+  .stat{ border-radius:20px; border:1px solid var(--line); background:var(--panel); padding:16px; box-shadow:var(--shadow) }
+  .stat .l{ font-size:12px; text-transform:uppercase; color:var(--muted) }
+  .stat .k{ font-size:clamp(22px,4.6vw,36px); font-weight:900; margin-top:6px }
+  .surface{ background:var(--panel); border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow) }
+  .table-wrap{ overflow:auto; border-radius:18px }
+  table{ width:100%; border-collapse:collapse; font-size:14px }
+  thead th{ position:sticky; top:66px; background:var(--panel); text-align:left; padding:12px; font-weight:900; font-size:12px; color:var(--muted); border-bottom:1px solid var(--line)}
+  th.right, td.right{ text-align:right }
+  tbody td{ padding:12px; border-bottom:1px solid var(--line) }
+  tfoot td{ padding:12px; border-top:2px solid var(--line); font-weight:900 }
+  .cell{ width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:transparent; color:var(--text); text-align:right;}
+  .chip{ display:inline-block; border-radius:999px; padding:7px 10px; font-weight:900; font-size:12px }
+  .chip.tam{ background:var(--text); color:var(--bg) }
+  .chip.sam{ background:var(--primary); color:#fff }
+  .chip.som{ background:var(--success); color:#062a1a }
+  @media (max-width: 720px){
+    thead{ display:none }
+    table, tbody, tr, td{ display:block; width:100% }
+    tbody td[data-label]::before{ content: attr(data-label); display:block; font-size:11px; color:var(--muted); margin-bottom:4px }
+    .mobile-totals{ display:flex; gap:8px; flex-wrap:wrap; align-items:center }
+    .mobile-totals .chip{ padding:6px 8px; font-size:12px }
+  }
+</style>
 </head>
 <body>
   <div class="toolbar">
     <div class="toolbar-inner">
-      <div><label>Set all Prices ($/yr)</label><input id="globalPrice" class="input" type="number" inputmode="decimal" placeholder="e.g., 1500" /></div>
-      <div><label>Set all Adoption %</label><input id="globalAdoption" class="input" type="number" inputmode="decimal" placeholder="e.g., 10" /></div>
-      <div><label>Set all Win %</label><input id="globalWin" class="input" type="number" inputmode="decimal" placeholder="25" /></div>
+      <div><label>Set all Prices ($/yr)</label><input id="globalPrice" class="input" type="number" /></div>
+      <div><label>Set all Adoption %</label><input id="globalAdoption" class="input" type="number" /></div>
+      <div><label>Set all Win %</label><input id="globalWin" class="input" type="number" /></div>
       <button id="applyAll" class="btn primary">Apply</button>
       <button id="reset" class="btn">Reset</button>
       <button id="download" class="btn">Export CSV</button>
     </div>
   </div>
-
   <div class="wrap">
-    <h1>GovTech TAM & SAM Calculator</h1>
-    <p class="lead">Mobile-first. All size categories preloaded. Edit any field; totals update live.</p>
-
-    <div class="stats">
+    <h1>GovTech TAM • SAM • SOM</h1>
+    <p class="lead">Size, Cities, and Counties are locked. Adjust adoption, win rate, and price to see instant totals.</p>
+    <section class="stats">
       <div class="stat"><div class="l">TAM</div><div id="tamTotal" class="k">$0</div></div>
       <div class="stat"><div class="l">SAM</div><div id="samTotal" class="k">$0</div></div>
       <div class="stat"><div class="l">SOM</div><div id="somTotal" class="k">$0</div></div>
-    </div>
-
-    <div class="panel" style="margin-top:12px">
+    </section>
+    <div class="surface" style="margin-top:14px">
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Size</th>
-              <th class="right">Cities</th>
-              <th class="right">Counties</th>
-              <th class="right">Total US</th>
-              <th class="right">Adoption %</th>
-              <th class="right">Win %</th>
-              <th class="right">Price ($/yr)</th>
-              <th class="right">TAM</th>
-              <th class="right">SAM #</th>
-              <th class="right">SAM</th>
-              <th class="right">SOM</th>
-              <th></th>
+              <th>Size</th><th class="right">Cities</th><th class="right">Counties</th><th class="right">Total US</th>
+              <th class="right">Adoption %</th><th class="right">Win %</th><th class="right">Price ($/yr)</th>
+              <th class="right">TAM</th><th class="right">SAM #</th><th class="right">SAM</th><th class="right">SOM</th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
           <tfoot>
             <tr>
-              <td>Total</td>
-              <td class="right" id="sumCities">0</td>
-              <td class="right" id="sumCounties">0</td>
-              <td class="right" id="sumTotal">0</td>
+              <td>Total</td><td class="right" id="sumCities">0</td><td class="right" id="sumCounties">0</td><td class="right" id="sumTotal">0</td>
               <td></td><td></td><td></td>
-              <td class="right" id="sumTAM">$0</td>
-              <td class="right" id="sumSAMn">0</td>
-              <td class="right" id="sumSAM">$0</td>
-              <td class="right" id="sumSOM">$0</td>
-              <td></td>
+              <td class="right" id="sumTAM">$0</td><td class="right" id="sumSAMn">0</td><td class="right" id="sumSAM">$0</td><td class="right" id="sumSOM">$0</td>
             </tr>
           </tfoot>
         </table>
       </div>
     </div>
   </div>
-
-  <button id="add" class="fab">+ Segment</button>
-
-  <script>
-    (function(){
-      const $ = (id) => document.getElementById(id);
-      const tbody = $("tbody");
-      const tamTotal = $("tamTotal");
-      const samTotal = $("samTotal");
-      const somTotal = $("somTotal");
-      const sumCities=$("sumCities"), sumCounties=$("sumCounties"), sumTotal=$("sumTotal"), sumTAM=$("sumTAM"), sumSAMn=$("sumSAMn"), sumSAM=$("sumSAM"), sumSOM=$("sumSOM");
-
-      function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\\"/g,'&quot;').replace(/'/g,'&#39;'); }
-      const sample=[
-        { id:1,  size:"<2.5k",     cities:12723, counties:140, adoption:0.10, win:25, price:500 },
-        { id:2,  size:"2.5k-5k",   cities:2068,  counties:170, adoption:0.20, win:25, price:500 },
-        { id:3,  size:"5k-10k",    cities:1671,  counties:401, adoption:2,    win:25, price:750 },
-        { id:4,  size:"10k-25k",   cities:1555,  counties:823, adoption:10,   win:25, price:1000 },
-        { id:5,  size:"25k-50k",   cities:736,   counties:621, adoption:10,   win:25, price:2000 },
-        { id:6,  size:"50k-100k",  cities:454,   counties:390, adoption:15,   win:25, price:2500 },
-        { id:7,  size:"100k-250k", cities:220,   counties:324, adoption:15,   win:25, price:3500 },
-        { id:8,  size:"250k-500k", cities:49,    counties:132, adoption:15,   win:25, price:5000 },
-        { id:9,  size:"500k-1M",   cities:24,    counties:97,  adoption:20,   win:25, price:7500 },
-        { id:10, size:">1M",       cities:10,    counties:44,  adoption:5,    win:25, price:10000 },
-      ];
-      let rows = load() || JSON.parse(JSON.stringify(sample));
-
-      const currency = (n)=> isNaN(n)? "$0" : n.toLocaleString(undefined,{style:"currency",currency:"USD",maximumFractionDigits:0});
-      const pct = (p)=>{ const x=parseFloat(p); return isNaN(x)?0:Math.min(Math.max(x,0),100)/100; };
-      const i = (n)=>{ const x=Math.round(n); return isNaN(x)?0:x };
-      function save(){ try{ localStorage.setItem('govtech_tam_sam_rows_mobile_v5', JSON.stringify(rows)); }catch(e){} }
-      function load(){ try{ return JSON.parse(localStorage.getItem('govtech_tam_sam_rows_mobile_v5')||'null'); }catch(e){ return null } }
-
-      function totals(){
-        return rows.reduce((a,r)=>{
-          const cities=+r.cities||0, counties=+r.counties||0, total=cities+counties; const ad=pct(r.adoption), w=pct(r.win||0), price=+r.price||0;
-          const tam=total*price, samn=total*ad, sam=samn*price, som=samn*w*price;
-          a.c+=cities; a.k+=counties; a.t+=total; a.tam+=tam; a.samn+=samn; a.sam+=sam; a.som+=som; return a;
-        },{c:0,k:0,t:0,tam:0,samn:0,sam:0,som:0});
-      }
-
-      function rowHTML(r){
-        const cities=+r.cities||0, counties=+r.counties||0, total=cities+counties; const ad=pct(r.adoption), w=pct(r.win||0), price=+r.price||0;
-        const tam=total*price, samn=total*ad, sam=samn*price, som=samn*w*price;
-        return `
-          <tr>
-            <td data-label="Size"><input class="cell" type="text" value="${esc(r.size||'')}" data-id="${r.id}" data-field="size"></td>
-            <td class="right" data-label="Cities"><input class="cell" type="number" inputmode="numeric" value="${r.cities||''}" data-id="${r.id}" data-field="cities"></td>
-            <td class="right" data-label="Counties"><input class="cell" type="number" inputmode="numeric" value="${r.counties||''}" data-id="${r.id}" data-field="counties"></td>
-            <td class="right" data-label="Total US">${i(total).toLocaleString()}</td>
-            <td class="right" data-label="Adoption %"><input class="cell" type="number" inputmode="decimal" value="${r.adoption||''}" data-id="${r.id}" data-field="adoption" min="0" max="100"></td>
-            <td class="right" data-label="Win %"><input class="cell" type="number" inputmode="decimal" value="${r.win||''}" data-id="${r.id}" data-field="win" min="0" max="100"></td>
-            <td class="right" data-label="Price ($/yr)"><input class="cell" type="number" inputmode="decimal" value="${r.price||''}" data-id="${r.id}" data-field="price" min="0"></td>
-
-            <!-- Desktop: separate columns -->
-            <td class="right hide-mobile" data-label="TAM"><span class="pill tam">${currency(tam)}</span></td>
-            <td class="right" data-label="SAM #">${i(samn).toLocaleString()}</td>
-            <td class="right hide-mobile" data-label="SAM"><span class="pill sam">${currency(sam)}</span></td>
-            <td class="right hide-mobile" data-label="SOM"><span class="pill som">${currency(som)}</span></td>
-
-            <!-- Mobile: horizontal totals chips -->
-            <td class="mobile-totals">
-              <span class="label">Totals</span>
-              <span class="pill tam" title="TAM">${currency(tam)}</span>
-              <span class="pill sam" title="SAM">${currency(sam)}</span>
-              <span class="pill som" title="SOM">${currency(som)}</span>
-            </td>
-
-            <td class="right row-actions"><button class="btn warn" data-remove="${r.id}">Remove</button></td>
-          </tr>`;
-      }
-
-      function render(){
-        tbody.innerHTML = rows.map(rowHTML).join('');
-        tbody.querySelectorAll('input').forEach(inp=>{
-          inp.addEventListener('input', e=>{
-            const id=+e.target.getAttribute('data-id'); const field=e.target.getAttribute('data-field');
-            const row = rows.find(x=>x.id===id); if(!row) return; row[field]=e.target.value; save(); render();
-          });
-        });
-        tbody.querySelectorAll('button[data-remove]').forEach(b=>{
-          b.addEventListener('click', e=>{ const id=+e.target.getAttribute('data-remove'); rows = rows.filter(x=>x.id!==id); save(); render(); });
-        });
-        updateTotals();
-      }
-
-      function updateTotals(){
-        const t = totals();
-        tamTotal.textContent = currency(t.tam);
-        samTotal.textContent = currency(t.sam);
-        somTotal.textContent = currency(t.som);
-        sumCities.textContent = t.c.toLocaleString();
-        sumCounties.textContent = t.k.toLocaleString();
-        sumTotal.textContent = t.t.toLocaleString();
-        sumTAM.textContent = currency(t.tam);
-        sumSAMn.textContent = i(t.samn).toLocaleString();
-        sumSAM.textContent = currency(t.sam);
-        sumSOM.textContent = currency(t.som);
-      }
-
-      function addRow(){ const next = (rows[rows.length-1]?.id || 0) + 1; rows.push({ id: next, size:"", cities:"", counties:"", adoption:"", win:"", price:"" }); save(); render(); }
-      function applyAll(){ const gp=$("globalPrice").value, ga=$("globalAdoption").value, gw=$("globalWin").value; rows = rows.map(r=>({ ...r, price: gp!==""?gp:r.price, adoption: ga!==""?ga:r.adoption, win: gw!==""?gw:r.win })); save(); render(); }
-      function reset(){ rows = JSON.parse(JSON.stringify(sample)); localStorage.removeItem('govtech_tam_sam_rows_mobile_v5'); ["globalPrice","globalAdoption","globalWin"].forEach(id=>$(id).value=""); render(); }
-      function csv(){ const header=["Size","Cities","Counties","Total US","Adoption %","Win %","Price/Year ($)","TAM ($)","SAM #","SAM ($)","SOM ($)"]; const out=[header.join(',')]; rows.forEach(r=>{ const cities=+r.cities||0, counties=+r.counties||0, total=cities+counties; const ad=pct(r.adoption), w=pct(r.win||0), price=+r.price||0; const tam=total*price, samn=Math.round(total*ad), sam=samn*price, som=Math.round(samn*w)*price; const escQ=s=>`"${String(s||'').replace(/"/g,'""')}"`; out.push([escQ(r.size),cities,counties,total,r.adoption||"",r.win||"",price,tam,samn,sam,som].join(',')); }); const blob=new Blob([out.join('\n')],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='govtech_tam_sam.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(url), 800); }
-
-      document.getElementById('add').addEventListener('click', addRow);
-      document.getElementById('applyAll').addEventListener('click', applyAll);
-      document.getElementById('reset').addEventListener('click', reset);
-      document.getElementById('download').addEventListener('click', csv);
-
-      render();
-    })();
-  </script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const tbody=$("tbody");
+  const sample=[
+    {id:1,size:"<2.5k",cities:12723,counties:140,adoption:0.10,win:25,price:500},
+    {id:2,size:"2.5k–5k",cities:2068,counties:170,adoption:0.20,win:25,price:500},
+    {id:3,size:"5k–10k",cities:1671,counties:401,adoption:2,win:25,price:750},
+    {id:4,size:"10k–25k",cities:1555,counties:823,adoption:10,win:25,price:1000},
+    {id:5,size:"25k–50k",cities:736,counties:621,adoption:10,win:25,price:2000},
+    {id:6,size:"50k–100k",cities:454,counties:390,adoption:15,win:25,price:2500},
+    {id:7,size:"100k–250k",cities:220,counties:324,adoption:15,win:25,price:3500},
+    {id:8,size:"250k–500k",cities:49,counties:132,adoption:15,win:25,price:5000},
+    {id:9,size:"500k–1M",cities:24,counties:97,adoption:20,win:25,price:7500},
+    {id:10,size:">1M",cities:10,counties:44,adoption:5,win:25,price:10000},
+  ];
+  let rows=JSON.parse(JSON.stringify(sample));
+  const currency=n=>isNaN(n)?"$0":n.toLocaleString(undefined,{style:"currency",currency:"USD",maximumFractionDigits:0});
+  const pct=p=>{const x=parseFloat(p);return isNaN(x)?0:Math.min(Math.max(x,0),100)/100};
+  const i=n=>{const x=Math.round(n);return isNaN(x)?0:x};
+  function totals(){
+    return rows.reduce((a,r)=>{
+      const cities=+r.cities||0,counties=+r.counties||0,total=cities+counties;
+      const ad=pct(r.adoption),w=pct(r.win||0),price=+r.price||0;
+      const tam=total*price,samn=total*ad,sam=samn*price,som=samn*w*price;
+      a.c+=cities;a.k+=counties;a.t+=total;a.tam+=tam;a.samn+=samn;a.sam+=sam;a.som+=som;return a;
+    },{c:0,k:0,t:0,tam:0,samn:0,sam:0,som:0});
+  }
+  function rowHTML(r){
+    const cities=+r.cities||0,counties=+r.counties||0,total=cities+counties;
+    const ad=pct(r.adoption),w=pct(r.win||0),price=+r.price||0;
+    const tam=total*price,samn=total*ad,sam=samn*price,som=samn*w*price;
+    return `<tr>
+      <td data-label="Size">${r.size}</td>
+      <td class="right" data-label="Cities">${cities.toLocaleString()}</td>
+      <td class="right" data-label="Counties">${counties.toLocaleString()}</td>
+      <td class="right" data-label="Total US">${i(total).toLocaleString()}</td>
+      <td class="right" data-label="Adoption %"><input class="cell" type="number" value="${r.adoption}" data-id="${r.id}" data-field="adoption"></td>
+      <td class="right" data-label="Win %"><input class="cell" type="number" value="${r.win}" data-id="${r.id}" data-field="win"></td>
+      <td class="right" data-label="Price ($/yr)"><input class="cell" type="number" value="${r.price}" data-id="${r.id}" data-field="price"></td>
+      <td class="right" data-label="TAM"><span class="chip tam">${currency(tam)}</span></td>
+      <td class="right" data-label="SAM #">${i(samn).toLocaleString()}</td>
+      <td class="right" data-label="SAM"><span class="chip sam">${currency(sam)}</span></td>
+      <td class="right" data-label="SOM"><span class="chip som">${currency(som)}</span></td>
+    </tr>`;
+  }
+  function render(){
+    tbody.innerHTML=rows.map(rowHTML).join('');
+    tbody.querySelectorAll('input').forEach(inp=>{
+      inp.addEventListener('input',e=>{
+        const id=+e.target.getAttribute('data-id');const field=e.target.getAttribute('data-field');
+        const row=rows.find(x=>x.id===id);if(!row)return;row[field]=e.target.value;render();
+      });
+    });
+    updateTotals();
+  }
+  function updateTotals(){
+    const t=totals();
+    $("tamTotal").textContent=currency(t.tam);
+    $("samTotal").textContent=currency(t.sam);
+    $("somTotal").textContent=currency(t.som);
+    $("sumCities").textContent=t.c.toLocaleString();
+    $("sumCounties").textContent=t.k.toLocaleString();
+    $("sumTotal").textContent=t.t.toLocaleString();
+    $("sumTAM").textContent=currency(t.tam);
+    $("sumSAMn").textContent=i(t.samn).toLocaleString();
+    $("sumSAM").textContent=currency(t.sam);
+    $("sumSOM").textContent=currency(t.som);
+  }
+  $("applyAll").addEventListener('click',()=>{
+    const gp=$("globalPrice").value,ga=$("globalAdoption").value,gw=$("globalWin").value;
+    rows=rows.map(r=>({...r,price:gp!==""?gp:r.price,adoption:ga!==""?ga:r.adoption,win:gw!==""?gw:r.win}));
+    render();
+  });
+  $("reset").addEventListener('click',()=>{rows=JSON.parse(JSON.stringify(sample));render();});
+  $("download").addEventListener('click',()=>{
+    const header=["Size","Cities","Counties","Total US","Adoption %","Win %","Price/Year ($)","TAM ($)","SAM #","SAM ($)","SOM ($)"];
+    const out=[header.join(',')];
+    rows.forEach(r=>{
+      const cities=+r.cities||0,counties=+r.counties||0,total=cities+counties;
+      const ad=pct(r.adoption),w=pct(r.win||0),price=+r.price||0;
+      const tam=total*price,samn=Math.round(total*ad),sam=samn*price,som=Math.round(samn*w)*price;
+      out.push([r.size,cities,counties,total,r.adoption,r.win,price,tam,samn,sam,som].join(','));
+    });
+    const blob=new Blob([out.join('\n')],{type:'text/csv'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='govtech_tam_sam.csv';a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),800);
+  });
+  render();
+})();
+</script>
 </body>
 </html>
