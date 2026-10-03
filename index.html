@@ -11,6 +11,7 @@
 
   gtag('config', 'G-QRMNN6HBDZ');
 </script>
+<link rel="icon" href="favicon.ico" sizes="any">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>GovTech Valuations: Easier and Harder than You Think — ethoslabs</title>
 <meta name="description" content="Size the local government technology market for your product in minutes. Bottom-up TAM and SAM by agency budget, built on the 2022 Census of Governments finance data for every U.S. local government.">
@@ -97,7 +98,6 @@ h2{font-family:"Playfair Display",Georgia,serif;font-weight:700;font-size:24px;c
 .lbl{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-family:Oswald,sans-serif;font-size:15px;font-weight:500;letter-spacing:.04em;color:var(--navy);margin:0 0 8px}
 .lbl .v{font-family:"Playfair Display",Georgia,serif;font-size:20px;font-weight:700;white-space:nowrap}
 .help{font-size:13px;color:var(--muted);margin:8px 0 0;line-height:1.45}
-.help b{color:var(--navy);font-weight:700}
 .ends{display:flex;justify-content:space-between;gap:12px;font-size:11.5px;color:var(--faint);margin-top:4px}
 .money{display:flex;align-items:center;border:2px solid var(--line);border-radius:10px;background:var(--bg);overflow:hidden}
 .money span{padding:0 12px;color:var(--muted);font-weight:700}
@@ -229,7 +229,7 @@ m.querySelectorAll('.mnav a').forEach(function(a){a.addEventListener('click',fun
       <p class="lbl"><label for="exp">How price scales with budget</label><span class="v" id="expV"></span></p>
       <input type="range" id="exp" min="35" max="100" value="60" aria-describedby="expH">
       <div class="ends"><span>← Flatter</span><span>Proportional →</span></div>
-      <p class="help" id="expH"></p>
+      <p class="help" id="expH">Slide right if your price tracks size (per seat, per resident, per transaction); left if most customers pay about the same.</p>
     </div>
   </div>
   <div class="tablewrap"><table>
@@ -352,10 +352,8 @@ function render(){
   var best=m.rows.reduce(function(a,r){return r.sam>a.sam?r:a;},m.rows[0]);
   el("note").innerHTML="SAM is <b>"+(m.sam/m.budget*1e4).toFixed(2)+" basis points</b> of what these governments spend. The "+fmtN(tn)+" governments over $100M — "+pct(tn/m.n*100)+" of the universe — account for <b>"+pct(m.sam?ts/m.sam*100:0)+"</b> of it. Your richest tier is <b>"+best.t.lab+"</b>.";
 }
-function syncExp(){var e=exp(),x=Math.pow(10,e),lo=roundPrice(base()*Math.pow(.1,e)),hi=roundPrice(base()*Math.pow(10,e)),xs=(Math.abs(x-Math.round(x))<.05?Math.round(x):x.toFixed(1))+"×";el("expV").textContent=e.toFixed(2);
-  el("expH").innerHTML=(e>=.95?"Price tracks budget one for one: 10× the budget means 10× the price":"Bigger agencies pay more, but not in proportion: 10× the budget means about <b>"+xs+"</b> the price")+
-  " — <b>"+fmtD(lo)+"</b> for a $10M agency, <b>"+fmtD(hi)+"</b> for a $1B one. Slide right if your price tracks size (per seat, per resident, per transaction); left if most customers pay about the same.";}
-el("base").addEventListener("input",function(){syncExp();refillPrices();render();writeState();});
+function syncExp(){el("expV").textContent=exp().toFixed(2);}
+el("base").addEventListener("input",function(){refillPrices();render();writeState();});
 el("exp").addEventListener("input",function(){syncExp();refillPrices();render();writeState();});
 
 function csvText(m){var L=["Budget tier,Governments,Median budget,Price,Serviceable share %,Governments in reach,TAM,SAM"];
