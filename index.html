@@ -97,6 +97,8 @@ h2{font-family:"Playfair Display",Georgia,serif;font-weight:700;font-size:24px;c
 .lbl{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-family:Oswald,sans-serif;font-size:15px;font-weight:500;letter-spacing:.04em;color:var(--navy);margin:0 0 8px}
 .lbl .v{font-family:"Playfair Display",Georgia,serif;font-size:20px;font-weight:700;white-space:nowrap}
 .help{font-size:13px;color:var(--muted);margin:8px 0 0;line-height:1.45}
+.help b{color:var(--navy);font-weight:700}
+.ends{display:flex;justify-content:space-between;gap:12px;font-size:11.5px;color:var(--faint);margin-top:4px}
 .money{display:flex;align-items:center;border:2px solid var(--line);border-radius:10px;background:var(--bg);overflow:hidden}
 .money span{padding:0 12px;color:var(--muted);font-weight:700}
 .money input{border:none;background:transparent;font-family:"Playfair Display",Georgia,serif;font-size:24px;font-weight:700;color:var(--navy);padding:8px 10px 8px 0;width:100%;outline:none}
@@ -225,7 +227,8 @@ m.querySelectorAll('.mnav a').forEach(function(a){a.addEventListener('click',fun
     </div>
     <div class="card">
       <p class="lbl"><label for="exp">How price scales with budget</label><span class="v" id="expV"></span></p>
-      <input type="range" id="exp" min="35" max="100" value="60">
+      <input type="range" id="exp" min="35" max="100" value="60" aria-describedby="expH">
+      <div class="ends"><span>← Flatter</span><span>Proportional →</span></div>
       <p class="help" id="expH"></p>
     </div>
   </div>
@@ -315,7 +318,7 @@ function refillPrices(){TIERS.forEach(function(t,i){t.priceOverride=null;t.price
 function buildInputs(){
   el("inBody").innerHTML=TIERS.map(function(t,i){return '<tr><td>'+t.lab+'</td><td>'+fmtN(t.n)+'</td><td class="mut">'+fmtM(t.median)+'</td>'+
     '<td><span class="cell"><span>$</span><input id="p'+i+'" type="number" min="0" step="100" aria-label="Price for '+t.lab+'"></span></td>'+
-    '<td class="adopt"><input id="a'+i+'" type="range" min="0" max="60" step="1" value="'+t.pen+'" aria-label="Serviceable share for '+t.lab+'"><span class="av" id="av'+i+'">'+t.pen+'%</span></td></tr>';}).join("");
+    '<td class="adopt"><input id="a'+i+'" type="range" min="0" max="100" step="1" value="'+t.pen+'" aria-label="Serviceable share for '+t.lab+'"><span class="av" id="av'+i+'">'+t.pen+'%</span></td></tr>';}).join("");
   TIERS.forEach(function(t,i){el("p"+i).addEventListener("input",function(e){t.price=Math.max(0,+e.target.value||0);t.priceOverride=t.price;render();writeState();});
     el("a"+i).addEventListener("input",function(e){t.pen=+e.target.value;el("av"+i).textContent=t.pen+"%";render();writeState();});});
 }
@@ -349,8 +352,10 @@ function render(){
   var best=m.rows.reduce(function(a,r){return r.sam>a.sam?r:a;},m.rows[0]);
   el("note").innerHTML="SAM is <b>"+(m.sam/m.budget*1e4).toFixed(2)+" basis points</b> of what these governments spend. The "+fmtN(tn)+" governments over $100M — "+pct(tn/m.n*100)+" of the universe — account for <b>"+pct(m.sam?ts/m.sam*100:0)+"</b> of it. Your richest tier is <b>"+best.t.lab+"</b>.";
 }
-function syncExp(){var e=exp();el("expV").textContent=e.toFixed(2);el("expH").textContent=e>=.95?"Linear — price tracks budget one for one.":"A 100× larger agency pays "+Math.pow(100,e).toFixed(0)+"× more, not 100×.";}
-el("base").addEventListener("input",function(){refillPrices();render();writeState();});
+function syncExp(){var e=exp(),x=Math.pow(10,e),lo=roundPrice(base()*Math.pow(.1,e)),hi=roundPrice(base()*Math.pow(10,e)),xs=(Math.abs(x-Math.round(x))<.05?Math.round(x):x.toFixed(1))+"×";el("expV").textContent=e.toFixed(2);
+  el("expH").innerHTML=(e>=.95?"Price tracks budget one for one: 10× the budget means 10× the price":"Bigger agencies pay more, but not in proportion: 10× the budget means about <b>"+xs+"</b> the price")+
+  " — <b>"+fmtD(lo)+"</b> for a $10M agency, <b>"+fmtD(hi)+"</b> for a $1B one. Slide right if your price tracks size (per seat, per resident, per transaction); left if most customers pay about the same.";}
+el("base").addEventListener("input",function(){syncExp();refillPrices();render();writeState();});
 el("exp").addEventListener("input",function(){syncExp();refillPrices();render();writeState();});
 
 function csvText(m){var L=["Budget tier,Governments,Median budget,Price,Serviceable share %,Governments in reach,TAM,SAM"];
@@ -386,7 +391,7 @@ function applyState(q){
   if(!q)return false;var touched=false;
   if(q.p&&!isNaN(+q.p)){el("base").value=Math.max(0,+q.p);touched=true;}
   if(q.e&&!isNaN(+q.e)){el("exp").value=Math.max(35,Math.min(100,Math.round(+q.e)));touched=true;}
-  if(q.s){var sh=q.s.split(",").map(Number);TIERS.forEach(function(t,i){if(!isNaN(sh[i]))t.pen=Math.max(0,Math.min(60,sh[i]));});touched=true;}
+  if(q.s){var sh=q.s.split(",").map(Number);TIERS.forEach(function(t,i){if(!isNaN(sh[i]))t.pen=Math.max(0,Math.min(100,sh[i]));});touched=true;}
   return touched;
 }
 function writeState(){
